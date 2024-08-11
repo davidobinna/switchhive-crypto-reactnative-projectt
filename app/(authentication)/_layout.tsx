@@ -7,13 +7,15 @@ import { PaperProvider } from "react-native-paper";
 
 export default function AuthPageLayout() {
     const router = useRouter()
-    
+    const {userData, appToken} = universalContext()
+  
     useEffect( () => {
         const callToken = async () => {
                const token: any = await getToken();
                if ( token ) {
-                    router.replace('/product' as Href<string>)
+                     router.replace('/product' as Href<string>)
              }
+             console.log(userData, appToken,token)
         }
         callToken();
       },[])

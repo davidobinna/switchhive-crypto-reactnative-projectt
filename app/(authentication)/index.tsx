@@ -5,17 +5,19 @@ import Paragraph from "@/components/uicomponents/Paragraph";
 import { Href, useRouter } from "expo-router";
 
 
+
 export default function AuthPageIndex() {
   const router = useRouter()
 
+  // Log the userData to see the initial and updated state
 
   const handleNavigate = () => {
-    router.push('auth/login' as Href<string>);
+    router.push('/(authentication)/login' as Href<string>);
   };
 
   return (
     <Background>
-          <Header>Welcom To Switch Hive</Header>
+          <Header>Welcome To Switch Hive</Header>
           <Paragraph>
              Your best Crypto Market, login to continue
           </Paragraph>

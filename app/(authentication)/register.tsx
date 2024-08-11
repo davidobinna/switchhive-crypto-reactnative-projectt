@@ -1,3 +1,5 @@
+import { saveToken } from "@/apisetup/securedToken";
+import { generateRandomToken } from "@/apisetup/tokenGen";
 import { confirmPasswordValidator, emailValidator, nameValidator, passwordValidator } from "@/authvalidator/authvalidation";
 import { BackButton } from "@/components/uicomponents/BackButton";
 import Background from "@/components/uicomponents/Background";
@@ -8,7 +10,7 @@ import TextInput from "@/components/uicomponents/TextInput";
 import { Colors } from "@/constants/Colors";
 import { universalContext } from "@/statecontext/contextProvider";
 import { Href, useNavigation, useRouter } from "expo-router";
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
@@ -17,7 +19,6 @@ interface RegisterProps {
     email: string | null,
     password: string | null,
 }
-
 
 
 export default function Register() {
@@ -31,14 +32,14 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dialog, setDialog] = useState<{ visibility: boolean, title: string, message: string }>({ visibility: false, title: '', message: '' });
 
-
-
   const handleValidationErrors = (nameError: string, emailError: string, passwordError: string, confirmPasswordError: string) => {
     setName(prev => ({ ...prev, error: nameError }));
     setEmail(prev => ({ ...prev, error: emailError }));
     setPassword(prev => ({ ...prev, error: passwordError }));
     setConfirmPassword(prev => ({ ...prev, error: confirmPasswordError }));
   };
+
+
 
   const _onSignUpPressed = async () => {
     const nameError = nameValidator(name.value);
@@ -59,18 +60,23 @@ export default function Register() {
     setIsLoading(true);
     try {
       
-         const updateUserData: RegisterProps = {
-            name: name.value,
-            email: email.value,
-            password: password.value
-         }   
-         setUserData({...userData, ...updateUserData})
+      if (Object.values(userData).length > 0) {
+        setDialog({ visibility: true, title: 'Oops!', message: `you're already registered, Click forgot password` }) 
+      } else {
 
-        setDialog({
-          visibility: true,
-          title: 'welcome',
-          message: `hello ${userData?.name || null}, you're sucessfully logged in, we need to verify this device` 
-        })
+       const updateUserData: RegisterProps = {
+         name: name.value,
+         email: email.value,
+         password: password.value
+      }
+
+       setUserData({...userData, ...updateUserData})
+       setDialog({
+         visibility: true,
+         title: 'welcome',
+         message: `hello, you're sucessfully logged in, you will be redirected` 
+       })
+     }
          
     } catch (error: any) {
       console.log(error);
@@ -88,11 +94,16 @@ export default function Register() {
     setDialog({ visibility: false, title: '', message: '' });
   };
 
-  const takeAction = (label: string) => {
-    if (label === 'home') {
+  const takeAction = async (label: string) => {
+    if (label === 'done') {
       setDialog({ visibility: false, title: '', message: '' })
+      await saveToken(generateRandomToken(30))
       router.replace('/product' as Href<string>)
   };
+
+  if (label === 'Oops') {
+    setDialog({ visibility: false, title: '', message: '' })
+  }
 }
 
   return (
@@ -159,7 +170,7 @@ export default function Register() {
         visibility={dialog.visibility}
         cancel={closePop}
         actionName="Got it!"
-        action={() => takeAction('home')}
+        action={() => takeAction(dialog.title === 'welcome' ? 'done' : 'Oops')}
       />
     </Background>
   );

@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { memo, ReactNode } from "react"
-import {  KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { ImageBackground, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 
 
 type Props = {
@@ -10,19 +10,22 @@ type Props = {
 
 const Background = ({ children}: Props) => {
    return (
-    <View
+
+   <ImageBackground
+    source={require('../../assets/images/background_dot.png')}
+    resizeMode="repeat"
     style={styles.background}
-    >
+     >
     <KeyboardAvoidingView style={styles.container} behavior="padding">
            {children}
        </KeyboardAvoidingView> 
-    </View>   
+    </ImageBackground>   
    )
 }
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: Colors.dark.background,
+      //  backgroundColor: Colors.dark.background,
         flex: 1,
         width: '100%',
       },

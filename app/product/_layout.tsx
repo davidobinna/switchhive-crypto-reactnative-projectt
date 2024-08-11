@@ -1,12 +1,24 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { router, Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { getToken } from '@/apisetup/securedToken';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+      const callToken = async () => {
+        const token = await getToken()
+        if (!token) {
+          router.replace('/')
+        }
+      }
+
+      callToken()
+  },[])
 
   return (
     <Tabs
@@ -26,9 +38,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="productdetails"
         options={{
-          title: 'Explore',
+          title: 'Details',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'cart' : 'cart'} color={color} />
           ),
         }}
       />

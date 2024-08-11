@@ -58,19 +58,20 @@ const _onLoginPressed = async () => {
             password: password.value,
         };
 
+        console.log(password.value, userData?.password)
 
-         if ((password.value.toString() !== userData?.password) || (email.value.toString() !== userData?.email )) {
-            setDialog({ visibility: true, title: 'Oops!', message:'Invalid credentials please try again.' })
-         }  else {
-            setUserData({ ...userData, ...updatedBookingData });
-         } 
-
-        setDialog({
+         if (password.value) {
+            if (password.value !== (userData?.password)) {
+              setDialog({ visibility: true, title: 'Oops!', message:'Invalid credentials please sign up try again.' })
+            } else { 
+          setDialog({
             visibility: true,
             title: 'welcome back!',
             message: `hello ${userData?.name || null}, you're sucessfully logged in, you will be redirected.`
           })
-
+          setUserData({ ...userData, ...updatedBookingData });
+         }
+    }
    } catch (error: any) {
       console.log(error)
       setDialog({ visibility: true, title: 'Oops!', message: `${error.message}, please try again.` })
@@ -88,9 +89,13 @@ const _onLoginPressed = async () => {
   }
 
   const takeAction  = async (label: string) => {
-     if (label === 'welcome back!') {
+     if (label === 'done') {
         setDialog({ visibility: false, title: '', message: '' })
         await saveToken(generateRandomToken(30))
+        router.replace('/product' as Href<string>)
+     } 
+     if (label === 'Oops!') {
+      setDialog({ visibility: false, title: '', message: '' })
      }
   }
 
@@ -126,7 +131,7 @@ const _onLoginPressed = async () => {
   
         <View style={styles.forgotPassword}>
           <TouchableOpacity
-            onPress={() => router.push('/auth/forgotpassword' as Href<string>)}
+            onPress={() => router.push('/' as Href<string>)}
           >
             <Text style={styles.label}>Forgot your password?</Text>
           </TouchableOpacity>
@@ -138,7 +143,7 @@ const _onLoginPressed = async () => {
   
         <View style={styles.row}>
           <Text style={styles.label}>Don’t have an account? </Text>
-          <TouchableOpacity onPress={() => router.push('/auth/register' as Href<string>)}>
+          <TouchableOpacity onPress={() => router.push('/(authentication)/register' as Href<string>)}>
             <Text style={styles.link}>Sign up</Text>
           </TouchableOpacity>
         </View>
@@ -148,7 +153,7 @@ const _onLoginPressed = async () => {
         visibility={dialog.visibility}
         cancel={closeDialog}
         actionName="Got it!"
-        action={() => takeAction(dialog.title === 'welcome back!' ? 'verify' : '')}
+        action={() => takeAction(dialog.title === 'welcome back!' ? 'done' : 'Oops!')}
       />
       </Background>
     )
@@ -165,7 +170,7 @@ const styles = StyleSheet.create({
       marginTop: 4,
     },
     label: {
-      color: Colors.dark.secondary,
+      color: Colors.dark.tint,
     },
     link: {
       fontWeight: 'bold',
